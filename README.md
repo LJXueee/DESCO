@@ -17,25 +17,56 @@ you can visit *[Dr. Shafiul's homepage](https://github.com/verivital/slsf_randge
 between the models and the data are loaded into your memory. We do not recommend using third-party models in unfiltered conditions, which will cause your computer
 to crash abnormally. Please be careful**
 ***
-### Our Works
+## Our Works
 Simulink is MathWorks' Cyber-Physical Systems (CPS) development tool, widely used across various domains including automotive, aerospace, and healthcare. It enables non-software engineers to rapidly build models by adding modular block diagrams. When a Simulink model meets requirements, engineers can use automatic code generation tools, such as Embedded Coder, to convert it into embedded code (e.g., C source code), deployable in safety-critical applications. However, due to errors or incorrect implementations in code generation, unexpected behaviors in the target application may arise, posing safety risks. In this paper, we introduce DESCO, the first differential testing method based on the partitioning of CPS modules according to the model's wiring structure. DESCO considers the closeness of connections between CPS modules for partitioning, aiming to generate Simulink models that better conform to partitioning requirements and are more diverse and complex. It thoroughly validates the code generation process, uncovering errors in the code generation. The experiments demonstrate that DESCO outperforms existing methods significantly. Currently, 16 code generation bugs have been identified, with 12 of them confirmed.
 
+DESCO consists of three components: preprocessing, equivalent embedded
+code generation, and differential testing. 
+### Preprocessing
+During the preprocessing phase, DESCO converts the seed Simulink model into a directed graph structure.
+For generated SLforge or realistic models, place them in the `courpus_seed` folder. At the command line, type: ```ModelProcessing```. The results will be displayed in the `directed_graph.txt` file.
+
+
+### Equivalent embedded code generation
+For the generated `directed_graph.txt` file, call the `LPA.py` file to partition the model, and use the `CombSubsystem.m` file to build the partitions into subsystems to generate equivalent variant models.
+
+
+### Differential testing
+In this component, we use the `Comparition.m` file to perform differential testing of equivalent models to detect embedded code generation bugs.
+
 ***
-### If you want to use our model quickly, some steps need to be done.
-Before you start, put the seed files you need for your experiment in the folder 'corpus_seed'.
 
-Second, if you want to run this method more carefully, you should configure the 'cfg.m' file, in which you can modify the files and intermediate file paths you use to save the generated code, as well as the number of variant models to be generated.
+### Specifically, if you want to use our model quickly, some steps need to be done.
 
-Once configured, add the `courpus_seed` folder to the working path, which is set to ```addpath(Seed_Model_Path)```
 
-When all of the above preparation is complete, you simply enter ```ModelProcessing``` on the Matlab command line to launch the program and begin the model partitioning and variant process.This will help you get started with LPAPART tools.
+First, you need to put the seed models in the folder `courpus_seed`.
 
+Second, you should configure the `cfg.m` file, in which you can modify the files and intermediate file paths you use to save the generated code, as well as the number of variant models to be generated.
+
+Third, add the `courpus_seed` folder to the working path, which is set to ```addpath(Seed_Model_Path)```
+
+In the end, when all of the above preparation is complete, you simply enter ```ModelProcessing``` on the Matlab command line to launch the program and begin the model partitioning and variant process.This will help you get started with DESCO tools.
+
+#### Introduction to each code file
+`ReadModel.m`: Reading all seed models in the `courpus_seed` folder
+
+`getLPApartiton.m`: Constructing the seed model as a directed graph
+
+`LPA.py`: Partitioning the model based on the directed graph
+
+`sysloop.m`: Getting information about the partitions that make up the algebraic ring
+
+`CombSubsystem.m`: Building partitions into subsystems to generate variant models
+
+`configParam.m`: Setting model parameters
+
+`Comparition.m`: Comparing simulation results of models through differential testing
 
 
 note: When the program is interrupted due to some accident, you can continue the experiment by modifying the loop order 'i' in the file ```ModelProcessing.m``` according to the progress that has been completed before.
 ***
 
-### Here are the details of these bugs.
+## Here are the details of these bugs.
 These errors in the error file can be reproduced using Matlab R2023a.
 
 You can find all bug files in path `CodeG-Bug`.
